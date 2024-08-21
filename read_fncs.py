@@ -42,7 +42,6 @@ def simplify_data(data):
         data_comb[keys_comb[i]] = (data_simp[keys[i]] + 2*data_simp[keys[i+6]])
    
     data_comb = list(data_comb.items())
-    print(data_comb)
     return data_comb
 
 def read_all_data(foldername, glycanname, filenames):
@@ -70,14 +69,14 @@ def read_all_data(foldername, glycanname, filenames):
     # combine all the dataframes
     data = pd.concat(df_list, ignore_index=True)
 
-    # # check to make sure the names are correct
-    # example = pd.read_pickle('example_df.pkl')
-    # columns_to_check = ['Name', 'Units']
-    # all_columns_same = True
-    # for col in columns_to_check:
-    #     if not example[col].equals(data[col]):
-    #         all_columns_same = False
-    #         print(f"Column {col} does not match.")
-    #         break
+    # check to make sure the names are correct
+    example = pd.read_excel('example_df.xlsx')
+    columns_to_check = ['Name', 'Units']
+    all_columns_same = True
+    for col in columns_to_check:
+        if not example[col].equals(data[col]):
+            all_columns_same = False
+            print(f"Column {col} does not match.")
+            break
 
     return data

@@ -1,5 +1,5 @@
 from read_fncs import read_all_data
-from rest_fncs import set_setpoint
+# from rest_fncs import set_setpoint
 import pandas as pd
 
 def dummy_control(data):
@@ -30,6 +30,7 @@ urd_rn, urd_cl = 2, 3
 
 # Read in data
 data = read_all_data(foldername, glycanname, filenames)
+print(data)
 
 ## Feed data to glycopy and get back new setpoints
 # output is overall media flowrate and concentration of galactose and uridine
@@ -40,12 +41,13 @@ gal_flow = med_flow*gal_conc/gal_stock_conc
 urd_flow = med_flow*urd_conc/urd_stock_conc
 
 # send to reactor
-set_setpoint(med_rn, med_cl, med_flow)
-set_setpoint(gal_rn, gal_cl, gal_flow)
-set_setpoint(urd_rn, urd_cl, urd_flow)
+# set_setpoint(med_rn, med_cl, med_flow)
+# set_setpoint(gal_rn, gal_cl, gal_flow)
+# set_setpoint(urd_rn, urd_cl, urd_flow)
 
 
 # other inputs to yingjie's code
 #   length of time until next control action
 #   length of time of control action
 #   supplements we have
+#   units for measurements
