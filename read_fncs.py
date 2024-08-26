@@ -6,9 +6,10 @@ def read_data(file_path):
     Reads one Excel file and returns the Pred Mods and %Quant (Area) columns
     """
     df = pd.read_excel(file_path, header=1)
+    glycan_time = df['Time'].iloc[0]
     columns_to_keep = ['Pred Mods', '%Quant (Area)']
     df = df[columns_to_keep]
-    return df
+    return df, glycan_time
 
 def simplify_data(data):
     '''
@@ -44,19 +45,15 @@ def simplify_data(data):
     data_comb = list(data_comb.items())
     return data_comb
 
-def read_all_data(foldername, glycanname, filenames, start_time, glycan_time):
+def read_all_data(foldername, glycanname, filenames, start_time):
     # all inputs are strings
     # start_time is when the run started
     # glycan_time is when the glycan data was collected
 
-    # adjust times to be datetime type
-    start_time = pd.to_datetime(start_time)
-    glycan_time = pd.to_datetime(glycan_time)
-
     # glycans
     # read in glycan data
     file_path = os.path.join(foldername, glycanname)
-    data = read_data(file_path)
+    [data, glycan_time] = read_data(file_path)
     glycan_data = simplify_data(data)
     # convert list to dataframe
     glycan_df = pd.DataFrame(glycan_data)
@@ -65,8 +62,13 @@ def read_all_data(foldername, glycanname, filenames, start_time, glycan_time):
     # make name of glycans column names
     glycan_df.columns = glycan_df.iloc[0]
     glycan_df = glycan_df[1:]
+
+    # adjust times to be datetime type
+    start_time = pd.to_datetime(start_time)
+    glycan_time = pd.to_datetime(glycan_time)
+
     # set glycan time as index
-    glycan_df.index = glycan_time
+    glycan_df.index = [glycan_time]
     glycan_df.index.name = 'datetime'
 
     # Read in all the rest
