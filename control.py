@@ -31,7 +31,9 @@ urd_rn, urd_cl = 2, 3
 
 while True:
     cont = input('Press \'y\' to read in data and calculate new setpoints. Press \'e\' to exit.')
-    if cont == 'y':
+    if cont == 'e':
+        break
+    elif cont == 'y':
         # Read in data
         data = read_all_data(foldername, glycanname, filenames, start_time)
 
@@ -42,6 +44,7 @@ while True:
         # set_setpoint(med_rn, med_cl, med_flow)
         # set_setpoint(gal_rn, gal_cl, gal_flow)
         # set_setpoint(urd_rn, urd_cl, urd_flow)
+
         
 # other inputs to glycopy - see glycopy user manual to know how to edit
 #   length of time until next control action
