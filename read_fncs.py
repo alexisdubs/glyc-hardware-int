@@ -44,39 +44,50 @@ def simplify_data(data):
     data_comb = list(data_comb.items())
     return data_comb
 
-def read_all_data(foldername, glycanname, filenames):
+def read_all_data(foldername, glycanname, filenames, start_time, glycan_time):
+    # all inputs are strings
+    # start_time is when the run started
+    # glycan_time is when the glycan data was collected
+
+    # adjust times to be datetime type
+    start_time = pd.to_datetime(start_time)
+    glycan_time = pd.to_datetime(glycan_time)
+
     # glycans
     # read in glycan data
     file_path = os.path.join(foldername, glycanname)
     data = read_data(file_path)
     glycan_data = simplify_data(data)
     # convert list to dataframe
-    glycan_df = pd.DataFrame(glycan_data, columns=['Name', 'Measurement'])
-    # add column with units
-    glycan_df['Units'] = 'rel quant'
+    glycan_df = pd.DataFrame(glycan_data)
+    # flip orientation
+    glycan_df = glycan_df.transpose()
+    # make name of glycans column names
+    glycan_df.columns = glycan_df.iloc[0]
+    glycan_df = glycan_df[1:]
+    # set glycan time as index
+    glycan_df.index = glycan_time
+    glycan_df.index.name = 'datetime'
 
     # Read in all the rest
     df_list = []
     # read in each file into a dataframe
     for filename in filenames:
         file_path = os.path.join(foldername, filename)
-        df = pd.read_excel(file_path)
+        df = pd.read_excel(file_path, index_col=0)
         df_list.append(df)
 
     # add glycans to list of dataframes with all the data
     df_list.append(glycan_df)
 
     # combine all the dataframes
-    data = pd.concat(df_list, ignore_index=True)
+    data_all = pd.concat(df_list)
+    # sort so in order of date time
+    data_all = data_all.sort_index()
 
-    # check to make sure the names are correct
-    example = pd.read_excel('example_df.xlsx')
-    columns_to_check = ['Name', 'Units']
-    all_columns_same = True
-    for col in columns_to_check:
-        if not example[col].equals(data[col]):
-            all_columns_same = False
-            print(f"Column {col} does not match.")
-            break
+    # convert dateteime to time since start
+    difference = data_all.index - start_time
+    difference = difference.total_seconds()/3600
+    data_all.set_index(difference, inplace=True)
 
-    return data
+    return data_all

@@ -1,7 +1,10 @@
+# %%
 from read_fncs import read_all_data
 # from rest_fncs import set_setpoint
 import pandas as pd
 
+
+# %%
 def dummy_control(data):
     med_flow = 1
     gal_conc = 0.1
@@ -12,8 +15,10 @@ def dummy_control(data):
 ## user edits this
 # name of folder all of the results are placed in
 foldername = 'data'
+start_time = '2024-08-01 00:00'
 # file exported from Agilent Bioconfirm software
 glycanname = 'glycans.xls'
+glycan_time = ['2024-08-01 12:00']
 # name of all the other files
 # standard formatting is Col 1: variable name, Col 2: units, Col3+: measurements
 # need to have column headers in excel files
@@ -28,9 +33,10 @@ med_rn, med_cl = 2, 1
 gal_rn, gal_cl = 2, 2
 urd_rn, urd_cl = 2, 3
 
+# %%
+
 # Read in data
-data = read_all_data(foldername, glycanname, filenames)
-print(data)
+data = read_all_data(foldername, glycanname, filenames, start_time, glycan_time)
 
 ## Feed data to glycopy and get back new setpoints
 # output is overall media flowrate and concentration of galactose and uridine
@@ -51,3 +57,5 @@ urd_flow = med_flow*urd_conc/urd_stock_conc
 #   length of time of control action
 #   supplements we have
 #   units for measurements
+#   objective function
+#   constraints
