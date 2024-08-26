@@ -1,8 +1,7 @@
 # %%
 from read_fncs import read_all_data
-# from rest_fncs import set_setpoint
+from rest_fncs import set_setpoint
 import pandas as pd
-
 
 # %%
 def dummy_control(data):
@@ -20,14 +19,11 @@ start_time = '2024-08-01 00:00'
 glycanname = 'glycans.xls'
 glycan_time = ['2024-08-01 12:00']
 # name of all the other files
-# standard formatting is Col 1: variable name, Col 2: units, Col3+: measurements
+# standard formatting is Col 1: timestamp, other columns are measurements
 # need to have column headers in excel files
 filenames = ['rebel.xlsx', 'nova_octet.xlsx', 'galactose_uridine.xlsx', 'ns_nsd.xlsx']
 # for testing
 filenames = ['other.xlsx']
-# concentration of supplement solutions
-gal_stock_conc = 50
-urd_stock_conc = 50
 # experimental configuration (reactor number and control loop number)
 med_rn, med_cl = 2, 1
 gal_rn, gal_cl = 2, 2
@@ -39,12 +35,7 @@ urd_rn, urd_cl = 2, 3
 data = read_all_data(foldername, glycanname, filenames, start_time, glycan_time)
 
 ## Feed data to glycopy and get back new setpoints
-# output is overall media flowrate and concentration of galactose and uridine
-[med_flow, gal_conc, urd_conc] = dummy_control(data)
-
-# calculate supplemental solution flowrates
-gal_flow = med_flow*gal_conc/gal_stock_conc
-urd_flow = med_flow*urd_conc/urd_stock_conc
+[med_flow, gal_flow, urd_flow] = dummy_control(data)
 
 # send to reactor
 # set_setpoint(med_rn, med_cl, med_flow)
