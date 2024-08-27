@@ -1,4 +1,3 @@
-# %%
 from read_fncs import read_all_data
 #from rest_fncs import set_setpoint
 import pandas as pd
