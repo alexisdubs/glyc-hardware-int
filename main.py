@@ -2,8 +2,7 @@ import sys
 import os
 import time
 from read_fncs import read_all_data
-# for testing
-#from rest_fncs import set_setpoint
+from rest_fncs import set_setpoint
 import pandas as pd
 
 ## user edits this
