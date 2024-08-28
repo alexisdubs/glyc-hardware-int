@@ -1,9 +1,10 @@
 import sys
 import os
 import time
+import pandas as pd
 from read_fncs import read_all_data
 from rest_fncs import set_setpoint
-import pandas as pd
+from glycosylation_python.glyco.mpc_data.glyco_qss_move_one_step_mpc import MPCWrapper
 
 ## user edits this
 # path to glycopy code
@@ -26,14 +27,6 @@ filenames = ['other.xlsx']
 med_rn, med_cl = 2, 1
 gal_rn, gal_cl = 2, 2
 urd_rn, urd_cl = 2, 3
-
-# import glycopy mpc code
-# Get the absolute path of the directory
-other_directory = os.path.abspath(glycopy_path + "/glycosylation_python/glyco/mpc_data")
-# Add the directory to the system path
-sys.path.append(other_directory)
-# Now you can import the module
-from glyco_qss_move_one_step_mpc import MPCWrapper
 
 # for testing
 def set_setpoint(a, b, c):
@@ -86,3 +79,4 @@ while True:
 #   units for measurements
 #   objective function
 #   constraints
+#   measurement uncertainty
