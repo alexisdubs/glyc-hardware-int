@@ -29,8 +29,8 @@ gal_rn, gal_cl = 2, 2
 urd_rn, urd_cl = 2, 3
 
 # for testing
-def set_setpoint(a, b, c):
-    pass
+#def set_setpoint(a, b, c):
+#    pass
 
 # create mpc wrapper object
 wrapper = MPCWrapper()

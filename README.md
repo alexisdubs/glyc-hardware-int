@@ -19,3 +19,7 @@ Line 43 shows the creation of an instance of the MPCWrapper object.
 Line 54 then shows the use of this object to call the move_one_step child function. The input to this function is the data from the system. This data should be a dataframe, formatted as in the example_df.xlsx included. The time column should be in hours since the process started. The units for each of the columns can be adjusted in GlycoPy in glyco/mpc_data/name_dict.xlsx
 
 Finally, since we are using the MPCWrapper object to store the past data and simulation results for the run, the script wherein you instatiate this object should not stop running until the creation of your run. This is accomplished here with a while True loop.
+
+Notes:
+
+There seems to be some issue with having graphical output in the loop when running in PyCharm's python terminal. I recommend running the main.py script in the terminal instead.

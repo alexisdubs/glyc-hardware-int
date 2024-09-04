@@ -3,7 +3,7 @@ import requests
 ## Functions
 def getProcessId(reactorNumber, url):
     auth = ("Lexi", "Lexi")
-    response = requests.get(url+'processes?running=true&reactorIds='+reactorNumber, auth=auth)
+    response = requests.get(url+'processes?running=true&reactorIds='+str(reactorNumber), auth=auth)
     r = response.json()
     return r['data'][0]['id']
 
@@ -15,7 +15,6 @@ def set_setpoint(reactorNumber, controlLoopNumber, flowRateSpt):
 
     # get process id of running process on specific bioreactor
     processID = getProcessId(reactorNumber, url)
-    print(processID)
 
     # creat dict for different control loop setpoints
     cl_dict = {
