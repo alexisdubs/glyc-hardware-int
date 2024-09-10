@@ -18,10 +18,9 @@ def set_setpoint(reactorNumber, controlLoopNumber, flowRateSpt):
 
     # creat dict for different control loop setpoints
     cl_dict = {
-        1: 'CL1_Flow_Cont',
-        2: 'CL2_Flow_Cont',
-        3: 'CL3_Flow_Cont',
-        4: 'CL4_Flow_Cont'
+        'med': 'Med_Flow_Cont',
+        'glut': 'Glut_Flow_Cont',
+        'gluc': 'Gluc_Flow_cont'
     }
 
     # get signal ID

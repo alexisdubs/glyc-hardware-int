@@ -4,7 +4,11 @@ import time
 import pandas as pd
 from read_fncs import read_all_data
 from rest_fncs import set_setpoint
+from other_fncs import check_options
 from glycosylation_python.glyco.mpc_data.glyco_qss_move_one_step_mpc import MPCWrapper
+
+
+
 
 ## user edits this
 # path to glycopy code
@@ -23,10 +27,16 @@ glycanname = 'glycans.xls'
 # for testing just put everything in one
 filenames = ['other.xlsx']
 
-# experimental configuration (reactor number and control loop number)
-med_rn, med_cl = 2, 1
-gal_rn, gal_cl = 2, 2
-urd_rn, urd_cl = 2, 3
+# experimental configuration (reactor number and control loop)
+# control loop selection is a string of either Med, Glut, or Gluc
+med_rn, med_cl = 2, 'med'
+gal_rn, gal_cl = 2, 'glut'
+urd_rn, urd_cl = 2, 'gluc'
+
+# make sure correct control loop syntax selection
+loops = [med_cl, gal_cl, urd_cl]
+options = ['med', 'glut', 'gluc']
+check_options(loops, options)
 
 # for testing
 #def set_setpoint(a, b, c):
