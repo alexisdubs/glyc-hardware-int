@@ -44,8 +44,8 @@ while True:
         data = read_all_data(foldername, glycanname, filenames, start_time)
 
         # Feed data to glycopy and get back new setpoints
-        control_action = wrapper.move_one_step(data, real_plant=True)
-
+        #control_action = wrapper.move_one_step(data, real_plant=True)
+        control_action = pd.read_pickle('example_control.pkl')
         # control action is dataframe with index of time in hours from now
         # columns are media, galactose, and uridine flowrates in L/hr
         # we need the first two rows because we want to send a pulse and then stop it
@@ -57,13 +57,18 @@ while True:
         # grab time and convert to seconds
         delay = control_action.index[1]*3600 # seconds
 
+        print('Sending control action to reactor')
         # send first control action to reactor
         set_setpoint(med_rn, med_cl, med_flow)
         set_setpoint(gal_rn, gal_cl, gal_flow)
         set_setpoint(urd_rn, urd_cl, urd_flow)
 
+        print('Control action occuring')
+
         # wait
         time.sleep(delay)
+
+        print('Turning control action off')
 
         # send second control action to reactor
         set_setpoint(med_rn, med_cl, med_flow2)
