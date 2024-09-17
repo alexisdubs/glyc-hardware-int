@@ -45,15 +45,11 @@ def simplify_data(data):
     data_comb = list(data_comb.items())
     return data_comb
 
-def read_all_data(foldername, glycanname, filenames, start_time):
-    # all inputs are strings
-    # start_time is when the run started
-    # glycan_time is when the glycan data was collected
-
-    # glycans
-    # read in glycan data
-    file_path = os.path.join(foldername, glycanname)
-    [data, glycan_time] = read_data(file_path)
+def read_simp_glycan(filepath):
+    # returns dataframe
+    # read in data
+    [data, glycan_time] = read_data(filepath)
+    # simplify the data
     glycan_data = simplify_data(data)
     # convert list to dataframe
     glycan_df = pd.DataFrame(glycan_data)
@@ -62,14 +58,38 @@ def read_all_data(foldername, glycanname, filenames, start_time):
     # make name of glycans column names
     glycan_df.columns = glycan_df.iloc[0]
     glycan_df = glycan_df[1:]
+    # adjust time to datetime format
+    glycan_time = pd.to_datetime(glycan_time)
+    # set glycan time as index
+    glycan_df.index = [glycan_time]
+    return glycan_df
+
+def get_glycan_data(foldername, glycanname):
+    # returns df with all the glycan data
+    path = os.path.join(foldername, glycanname)
+    if os.path.isfile(path):
+        # If it's a file, read it directly
+        data = read_simp_glycan(path)
+    elif os.path.isdir(path):
+        df_list = []
+        # If it's a directory, read all files in the directory
+        files = os.listdir(path)
+        for file in files:
+            file_path = os.path.join(path, file)
+            df = read_simp_glycan(file_path)
+            df_list.append(df)
+        data = pd.concat(df_list)
+    return data
+
+def read_all_data(foldername, glycanname, filenames, start_time):
+    # all inputs are strings
+    # start_time is when the run started
+
+    # glycans
+    glycan_df = get_glycan_data(foldername, glycanname)
 
     # adjust times to be datetime type
     start_time = pd.to_datetime(start_time)
-    glycan_time = pd.to_datetime(glycan_time)
-
-    # set glycan time as index
-    glycan_df.index = [glycan_time]
-    glycan_df.index.name = 'datetime'
 
     # Read in all the rest
     df_list = []
