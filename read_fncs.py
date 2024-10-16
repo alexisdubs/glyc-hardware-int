@@ -6,18 +6,18 @@ def read_data(file_path):
     Reads one Excel file and returns the Pred Mods and %Quant (Area) columns
     """
     df = pd.read_excel(file_path, header=1)
-    glycan_time = df['Time'].iloc[0]
     columns_to_keep = ['Pred Mods', '%Quant (Area)']
     df = df[columns_to_keep]
-    return df, glycan_time
+    return df
+
 
 def simplify_data(data):
     '''
     Input: data (pandas dataframe) with column of Pred Mods and %Quant (Area)
     Combines similar glycoforms
     '''
-    keys = ['1*G0', '1*G0F', '1*G1', '1*G1F', '1*G2', '1*G2F',
-        '2*G0', '2*G0F', '2*G1', '2*G1F', '2*G2', '2*G2F']
+    keys = ['1*G0 ', '1*G0F', '1*G1(', '1*G1F', '1*G2 ', '1*G2F',
+        '2*G0 ', '2*G0F', '2*G1(', '2*G1F', '2*G2 ', '2*G2F']
    
     # initialize data
     default_value = 0
@@ -40,7 +40,7 @@ def simplify_data(data):
     keys_comb = ['G0', 'G0F', 'G1', 'G1F', 'G2', 'G2F']
     data_comb = dict.fromkeys(keys_comb, default_value)
     for i in range(6):
-        data_comb[keys_comb[i]] = (data_simp[keys[i]] + 2*data_simp[keys[i+6]])
+        data_comb[keys_comb[i]] = (data_simp[keys[i]]/2 + data_simp[keys[i+6]])
    
     data_comb = list(data_comb.items())
     return data_comb
@@ -48,7 +48,7 @@ def simplify_data(data):
 def read_simp_glycan(filepath):
     # returns dataframe
     # read in data
-    [data, glycan_time] = read_data(filepath)
+    data = read_data(filepath)
     # simplify the data
     glycan_data = simplify_data(data)
     # convert list to dataframe
@@ -58,10 +58,6 @@ def read_simp_glycan(filepath):
     # make name of glycans column names
     glycan_df.columns = glycan_df.iloc[0]
     glycan_df = glycan_df[1:]
-    # adjust time to datetime format
-    glycan_time = pd.to_datetime(glycan_time)
-    # set glycan time as index
-    glycan_df.index = [glycan_time]
     return glycan_df
 
 def get_glycan_data(foldername, glycanname):
@@ -78,38 +74,36 @@ def get_glycan_data(foldername, glycanname):
             file_path = os.path.join(path, file)
             df = read_simp_glycan(file_path)
             df_list.append(df)
+        # combine all the glycan data
         data = pd.concat(df_list)
+        data = data.mean().to_frame().transpose()
     return data
 
-def read_all_data(foldername, glycanname, filenames, start_time):
+def read_all_data(foldername, time, glycanname, filenames):
     # all inputs are strings
-    # start_time is when the run started
+    
+    # time is when the data was collected
+    # data for each time point is in folder with that name
+    path = os.path.join(foldername, time)
 
     # glycans
-    glycan_df = get_glycan_data(foldername, glycanname)
-
-    # adjust times to be datetime type
-    start_time = pd.to_datetime(start_time)
+    glycan_df = get_glycan_data(path, glycanname)
 
     # Read in all the rest
     df_list = []
     # read in each file into a dataframe
     for filename in filenames:
-        file_path = os.path.join(foldername, filename)
-        df = pd.read_excel(file_path, index_col=0)
+        file_path = os.path.join(path, filename)
+        df = pd.read_excel(file_path)
         df_list.append(df)
 
     # add glycans to list of dataframes with all the data
     df_list.append(glycan_df)
 
     # combine all the dataframes
-    data_all = pd.concat(df_list)
-    # sort so in order of date time
-    data_all = data_all.sort_index()
+    data_all = pd.concat(df_list, axis=1)
 
-    # convert dateteime to time since start
-    difference = data_all.index - start_time
-    difference = difference.total_seconds()/3600
-    data_all.set_index(difference, inplace=True)
-
+    # set index as time in hours
+    data_all.index = pd.Index([24*int(time)]*len(data_all))
+    
     return data_all
