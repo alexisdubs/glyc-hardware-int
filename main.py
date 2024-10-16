@@ -35,7 +35,8 @@ def set_setpoint(a, b, c):
     pass
 
 # create mpc wrapper object
-wrapper = MPCWrapper()
+#wrapper = MPCWrapper()
+wrapper = MPCWrapper(days=2, real_plant=True)
 
 while True:
     while True:
