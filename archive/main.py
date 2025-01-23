@@ -21,15 +21,10 @@ filenames = ['other.xlsx']
 
 # experimental configuration (reactor number and control loop)
 # control loop selection is a string of either Med, Glut, or Gluc
-fma_rn, fma_cl = 2, 'med'
-fmb_rn, fmb_cl = 2, 'glut'
-gal_rn, gal_cl = 2, 'glut'
-urd_rn, urd_cl = 2, 'gluc'
-
-# make sure correct control loop syntax selection
-# loops = [med_cl, gal_cl, urd_cl]
-# options = ['med', 'glut', 'gluc']
-# check_options(loops, options)
+# list of reactor numbers for control loops
+# FMA, FMB, Glutamine, Glucose, Uridine, Galactose
+rn = [2, 2, 2, 1, 1, 1]
+cl = ['med', 'glut', 'gluc', 'med', 'glut', 'gluc']
 
 # for testing
 def set_setpoint(a, b, c):
@@ -37,9 +32,9 @@ def set_setpoint(a, b, c):
 
 # create mpc wrapper object
 #wrapper = MPCWrapper()
-wrapper = MPCWrapper(days=4, real_plant=True)
+#wrapper = MPCWrapper(days=4, real_plant=True)
 
-for i in range(4): #while True:
+for i in range(1): #while True:
     try:
         day = f'{i}'#input('Enter the day. Must be an integer')
         # Read in data
@@ -48,25 +43,23 @@ for i in range(4): #while True:
         data.to_excel('dataframe.xlsx')
 
         # Feed data to glycopy and get back new setpoints
-        control_action = wrapper.move_one_step(data)
-        #control_action = pd.read_pickle('example_control.pkl')
+        #control_action = wrapper.move_one_step(data)
+        control_action = pd.read_pickle('example_control.pkl')
         # control action is dataframe with index of time in hours from now
         # columns are media, galactose, and uridine flowrates in L/hr
         # we need the first two rows because we want to send a pulse and then stop it
 
         # unpack control actions and convert to mL/hr
-        fma_flow, fmb_flow, gal_flow, urd_flow = control_action.iloc[0] * 1000 # mL/hr
-        fma_flow2, fmb_flow2, gal_flow2, urd_flow2 = control_action.iloc[1] * 1000 # mL/hr
+        flow1 = control_action.iloc[0] * 1000 # mL/hr
+        flow2 = control_action.iloc[1] * 1000 # mL/hr
 
         # grab time and convert to seconds
         delay = control_action.index[1]*3600 # seconds
 
         print('Sending control action to reactor')
         # send first control action to reactor
-        set_setpoint(fma_rn, fma_cl, fma_flow)
-        set_setpoint(fmb_rn, fmb_cl, fmb_flow)
-        set_setpoint(gal_rn, gal_cl, gal_flow)
-        set_setpoint(urd_rn, urd_cl, urd_flow)
+        for i in range(len(cl)):
+            set_setpoint(rn[i], cl[i], flow1[i])
 
         print('Control action occuring')
 
@@ -76,10 +69,9 @@ for i in range(4): #while True:
         print('Turning control action off')
 
         # send second control action to reactor
-        set_setpoint(fma_rn, fma_cl, fma_flow2)
-        set_setpoint(fmb_rn, fmb_cl, fmb_flow2)
-        set_setpoint(gal_rn, gal_cl, gal_flow2)
-        set_setpoint(urd_rn, urd_cl, urd_flow2)
+        for i in range(len(cl)):
+            set_setpoint(rn[i], cl[i], flow2[i])
+
     except Exception as e:
         print("An error occurred:", e)
         traceback.print_exc()

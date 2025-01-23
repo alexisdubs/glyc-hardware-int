@@ -107,3 +107,6 @@ def read_all_data(foldername, time, glycanname, filenames):
     data_all.index = pd.Index([24*int(time)]*len(data_all))
     
     return data_all
+
+glycans = get_glycan_data('data', 'glycans')
+glycans.to_excel('glycans.xlsx')
